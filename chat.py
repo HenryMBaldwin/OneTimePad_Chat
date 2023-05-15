@@ -1,6 +1,7 @@
 import tkinter as tk
 import socket
 import threading
+import time
 
 # Constants
 PORT = 5000
@@ -34,6 +35,12 @@ ip_entry = tk.Entry(root, width=20)
 ip_entry.insert(0, "IP Address")
 ip_entry.pack(side=tk.TOP, fill=tk.X)
 
+# Create an Entry widget for entering the key
+key_entry = tk.Entry(root, width=20)
+key_entry.insert(0, "Key")
+key_entry.pack(side=tk.TOP, fill=tk.X)
+
+
 # Create a UDP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind(('0.0.0.0', PORT))
@@ -42,8 +49,9 @@ def receive_messages():
     """Listen for incoming messages and display them in the chat history."""
     while True:
         message, address = sock.recvfrom(BUFFER_SIZE)
+        timestamp = time.strftime("%H:%M:%S")
         history.config(state=tk.NORMAL)
-        history.insert(tk.END, f"[{address[0]}]: {message.decode()}\n")
+        history.insert(tk.END, f"[{address[0]}] {timestamp}: {message.decode()}\n")
         history.config(state=tk.DISABLED)
 
 def send_message():
@@ -52,9 +60,11 @@ def send_message():
     dest_ip = ip_entry.get()
     sock.sendto(message.encode(), (dest_ip, PORT))
     message_entry.delete(0, tk.END)
+    timestamp = time.strftime("%H:%M:%S")
     history.config(state=tk.NORMAL)
-    history.insert(tk.END, f"[{IP}]: {message}\n")
+    history.insert(tk.END, f"[You] {timestamp}: {message}\n")
     history.config(state=tk.DISABLED)
+
 
 
 # Start a thread to receive messages

@@ -47,6 +47,15 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind(('0.0.0.0', PORT))
 
 
+def string_to_binary(input_string):
+    binary_string = ''.join(format(ord(char), '08b') for char in input_string)
+    return binary_string
+
+
+def binary_to_string(input_binary):
+    n = int(input_binary, 2)
+    output_string = n.to_bytes((n.bit_length() + 7) // 8, 'big').decode()
+    return output_string
 
 #def generate_key(length):
 #    """Generate a random key of the specified length."""
@@ -64,7 +73,7 @@ generate_key_button = tk.Button(root, text="Generate Key")
 
 # Function to generate a random key and insert it into the key field
 def generate_key():
-    key = generate_key_str(200)
+    key = string_to_binary(generate_key_str(200))
     key_entry.delete(0, tk.END)
     key_entry.insert(0, key)
 
@@ -80,7 +89,7 @@ key_entry.pack(side=tk.LEFT, expand=True, fill=tk.X)
 def encrypt(message, key):
     """Encrypt a message using the One Time Pad cipher with bitwise XOR."""
     message = message[:200].ljust(200)  # Truncate or pad message to 200 characters
-    key = key[:200].ljust(200)  # Truncate or pad key to 200 characters
+    #key = key[:200].ljust(200)  # Truncate or pad key to 200 characters
     # Convert the message and key to lists of ASCII codes
     message_codes = [ord(c) for c in message]
     key_codes = [ord(c) for c in key]
@@ -109,7 +118,7 @@ def receive_messages():
         timestamp = time.strftime("%H:%M:%S")
         
         # Decrypt the incoming message using the key in the "key" box
-        key = key_entry.get()
+        key = binary_to_string(key_entry.get())
         message = message.decode()[:200]  # Truncate message to 200 characters
         message = message.ljust(200)     # Pad message with spaces to length 200
         decrypted_message = decrypt(message, key)
@@ -123,7 +132,7 @@ def send_message():
     """Send the encrypted message to the specified IP address."""
     message = message_entry.get()
     dest_ip = ip_entry.get()
-    key = key_entry.get()
+    key = binary_to_string(key_entry.get())
     encrypted = encrypt(message, key)
     sock.sendto(encrypted.encode(), (dest_ip, PORT))
     message_entry.delete(0, tk.END)

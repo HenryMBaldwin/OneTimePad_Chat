@@ -35,12 +35,6 @@ ip_entry = tk.Entry(root, width=20)
 ip_entry.insert(0, "IP Address")
 ip_entry.pack(side=tk.TOP, fill=tk.X)
 
-# Create an Entry widget for entering the key
-key_entry = tk.Entry(root, width=20)
-key_entry.insert(0, "Key")
-key_entry.pack(side=tk.TOP, fill=tk.X)
-
-
 # Create a UDP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind(('0.0.0.0', PORT))

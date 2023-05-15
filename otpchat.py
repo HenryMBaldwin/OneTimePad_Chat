@@ -90,6 +90,16 @@ def encrypt(message, key):
     encrypted_message = ''.join(chr(c) for c in encrypted_codes)
     return encrypted_message
 
+def decrypt(encrypted_message, key):
+    """Decrypt a message encrypted with the One Time Pad cipher with bitwise XOR."""
+    # Convert the encrypted message and key to lists of ASCII codes
+    encrypted_codes = [ord(c) for c in encrypted_message]
+    key_codes = [ord(c) for c in key]
+    # Perform bitwise XOR on each ASCII code pair
+    decrypted_codes = [e ^ k for e, k in zip(encrypted_codes, key_codes)]
+    # Convert the decrypted ASCII codes back to a string
+    decrypted_message = ''.join(chr(c) for c in decrypted_codes)
+    return decrypted_message.strip()  # Remove any trailing whitespace
 
 
 def receive_messages():

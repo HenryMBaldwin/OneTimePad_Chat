@@ -52,6 +52,10 @@ def send_message():
     dest_ip = ip_entry.get()
     sock.sendto(message.encode(), (dest_ip, PORT))
     message_entry.delete(0, tk.END)
+    history.config(state=tk.NORMAL)
+    history.insert(tk.END, f"[{IP}]: {message}\n")
+    history.config(state=tk.DISABLED)
+
 
 # Start a thread to receive messages
 threading.Thread(target=receive_messages, daemon=True).start()

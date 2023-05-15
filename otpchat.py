@@ -47,15 +47,23 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind(('0.0.0.0', PORT))
 
 
-def string_to_binary(input_string):
-    binary_string = ''.join(format(ord(char), '08b') for char in input_string)
-    return binary_string
+def string_to_binary(string):
+    """
+    This function takes a string of characters as input and returns the binary representation of the string.
+    """
+    binary = ""
+    for char in string:
+        binary += format(ord(char), '08b')
+    return binary
 
-
-def binary_to_string(input_binary):
-    n = int(input_binary, 2)
-    output_string = n.to_bytes((n.bit_length() + 7) // 8, 'big').decode()
-    return output_string
+def binary_to_string(binary):
+    """
+    This function takes a binary string as input and returns the corresponding character string.
+    """
+    str = ""
+    for i in range(0, len(binary), 8):
+        str += chr(int(binary[i:i+8], 2))
+    return str
 
 #def generate_key(length):
 #    """Generate a random key of the specified length."""
@@ -66,6 +74,7 @@ def generate_key_str(length):
     key = ""
     for i in range(length):
         key += chr(random.randint(0, 255))
+        #print(key)
     return key
 
 # Create a button to generate a random key

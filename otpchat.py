@@ -16,7 +16,7 @@ s.close()
 
 # Create the GUI
 root = tk.Tk()
-root.title(f"UDP Chat - {IP}")
+root.title(f"OTP Chat - {IP}")
 
 # Create a Text widget to display chat history
 history = tk.Text(root, state=tk.DISABLED)
@@ -25,7 +25,12 @@ history.pack(expand=True, fill=tk.BOTH)
 # Create an Entry widget for entering messages
 message_entry = tk.Entry(root, width=50)
 message_entry.insert(0, "Message")
-message_entry.pack(side=tk.LEFT, expand=True, fill=tk.X)
+message_entry.pack(side=tk.TOP, expand=True, fill=tk.X)
+
+# Create an Entry widget for the message length
+len_entry  = tk.Entry(root, width = 20)
+len_entry.insert(0,200)
+len_entry.pack(side = tk.LEFT, fill = tk.X)
 
 # Create a button to send messages
 send_button = tk.Button(root, text="Send")
@@ -72,7 +77,7 @@ def binary_to_string(binary):
 def generate_key_str(length):
     """Generate a random key string of specified length."""
     key = ""
-    for i in range(length):
+    for i in range(int(length)):
         key += chr(random.randint(0, 255))
         #print(key)
     return key
@@ -82,7 +87,7 @@ generate_key_button = tk.Button(root, text="Generate Key")
 
 # Function to generate a random key and insert it into the key field
 def generate_key():
-    key = string_to_binary(generate_key_str(200))
+    key = string_to_binary(generate_key_str(int(len_entry.get())))
     key_entry.delete(0, tk.END)
     key_entry.insert(0, key)
 
@@ -97,8 +102,8 @@ key_entry.pack(side=tk.LEFT, expand=True, fill=tk.X)
 
 def encrypt(message, key):
     """Encrypt a message using the One Time Pad cipher with bitwise XOR."""
-    message = message[:200].ljust(200)  # Truncate or pad message to 200 characters
-    #key = key[:200].ljust(200)  # Truncate or pad key to 200 characters
+    message = message[:int(len_entry.get())].ljust(int(len_entry.get()))  # Truncate or pad message to int(len_entry.get()) characters
+    #key = key[:int(len_entry.get())].ljust(int(len_entry.get()))  # Truncate or pad key to int(len_entry.get()) characters
     # Convert the message and key to lists of ASCII codes
     message_codes = [ord(c) for c in message]
     key_codes = [ord(c) for c in key]
@@ -128,8 +133,8 @@ def receive_messages():
         
         # Decrypt the incoming message using the key in the "key" box
         key = binary_to_string(key_entry.get())
-        message = message.decode()[:200]  # Truncate message to 200 characters
-        message = message.ljust(200)     # Pad message with spaces to length 200
+        message = message.decode()[:int(len_entry.get())]  # Truncate message to int(len_entry.get()) characters
+        message = message.ljust(int(len_entry.get()))     # Pad message with spaces to length int(len_entry.get())
         decrypted_message = decrypt(message, key)
         
         history.config(state=tk.NORMAL)
@@ -171,11 +176,15 @@ def on_entry_click(event):
     elif widget.get() == "Key" and widget == widget.focus_get():
         widget.delete(0, "end") # delete all the text in the entry widget
         widget.insert(0, "") # insert blank for user input
+    elif widget.get() == "Key Length" and widget == widget.focus_get():
+        widget.delete(0, "end") # delete all the text in the entry widget
+        widget.insert(0, "") 
 
 # Bind the default text removal function to the entry boxes
 message_entry.bind("<FocusIn>", on_entry_click)
 ip_entry.bind("<FocusIn>", on_entry_click)
 key_entry.bind("<FocusIn>", on_entry_click)
+len_entry.bind("<FocusIn>", on_entry_click)
 
 # Function to restore the default text if the user clicks away without entering anything
 def on_focusout(event):
@@ -185,11 +194,14 @@ def on_focusout(event):
         ip_entry.insert(0, "IP Address")
     if key_entry.get() == "":
         key_entry.insert(0, "Key")
+    if len_entry.get() == "":
+        len_entry.insert(0, "Key Length")
 
 # Bind the default text restoration function to the entry boxes
 message_entry.bind("<FocusOut>", on_focusout)
 ip_entry.bind("<FocusOut>", on_focusout)
 key_entry.bind("<FocusOut>", on_focusout)
+len_entry.bind("<FocusOut>", on_focusout)
 
 # Start the GUI event loop
 root.mainloop()
